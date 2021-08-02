@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.config.ConfigActivity">
+
+    <include layout="@layout/top_view" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/div_color" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/device_content"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_dev_id"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/device_id"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_dev_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="xxxxxx" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_dev_number"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/equipment_number"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_dev_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/unset"
+                    android:textSize="@dimen/text_size_normal" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Startup_Parameters"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_startup_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/startup_temperature"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_startup_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="xxxxxx" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_stopping_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/stopping_temperature"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_stopping_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="xxxxxx" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+
+            <RelativeLayout
+                android:id="@+id/rl_start_cooling"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/start_cooling"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/cb_start_cooling"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:clickable="false" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+
+            <RelativeLayout
+                android:id="@+id/rl_cleaning_speed"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/cleaning_speed"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_cleaning_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="20" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_discharge_speed"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/discharge_speed"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_discharge_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="10" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/other"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_check_update"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/check_update"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tv_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="xxxxxx" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_modify_password"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/modify_password"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_products_a_set"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/products_a_set"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+
+            <RelativeLayout
+                android:id="@+id/rl_products_b_set"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/products_b_set"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+
+            <RelativeLayout
+                android:id="@+id/rl_cleaning_module"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/cleaning_module"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_open_debug"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/open_debug"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/cb_open_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:clickable="false" />
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_exit_app"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/exit_app"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>
