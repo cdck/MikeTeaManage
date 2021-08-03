@@ -1,2 +1,3 @@
+include ':SerialProtLibrary'
 include ':app'
 rootProject.name = "MikeTeaManage"

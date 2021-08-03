@@ -19,6 +19,11 @@ import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
 import com.xlk.miketeamanage.model.MmkvKey;
 import com.xlk.miketeamanage.view.config.ConfigActivity;
+import com.xlk.serialprotlibrary.bean.ComBean;
+import com.xlk.serialprotlibrary.utils.DataUtils;
+import com.xlk.serialprotlibrary.utils.SerialHelper;
+
+import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -32,6 +37,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     private TextView a_content, b_content, c_content, d_content;
     private Button a_btn, b_btn, c_btn, d_btn;
     private MMKV mmkv;
+    private SerialHelper serialHelper;
 
 
     @Override
@@ -73,11 +79,45 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         if (password == null || password.isEmpty()) {
             mmkv.encode(MmkvKey.password, "123456");
         }
+//        initSerialPort();
+//        a_btn.setOnClickListener(v->{
+//            if (serialHelper.isOpen()) {
+//                LogUtils.i("发送数据 AA01010000010155");
+//                serialHelper.sendTxt("AA01010000010155");
+//            }
+//        });
+    }
+
+    private void initSerialPort() {
+        serialHelper = new SerialHelper("/dev/ttyS0", 9600) {
+            @Override
+            protected void onDataReceived(ComBean comBean) {
+                LogUtils.i("onDataReceived " + comBean.sComPort + "," + comBean.sRecTime + "：" + DataUtils.ByteArrToHex(comBean.bRec));
+            }
+        };
+        try {
+            LogUtils.e("开启串口：" + serialHelper.getPort() + "," + serialHelper.getBaudRate());
+            serialHelper.open();
+            LogUtils.e("成功开启串口：" + serialHelper.getPort() + ",isOpen=" + serialHelper.isOpen());
+            if (serialHelper.isOpen()) {
+                serialHelper.sendTxt("AA01010000010155");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (serialHelper != null) {
+            serialHelper.close();
+        }
     }
 
     @Override
     public void onBackPressed() {
-
+//        serialHelper.testRead();
     }
 
     public void jump2set(View view) {

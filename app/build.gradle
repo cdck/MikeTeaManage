@@ -37,6 +37,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    implementation project(":SerialProtLibrary")
+
     //https://github.com/greenrobot/EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
     //权限申请框架：https://github.com/getActivity/XXPermissions

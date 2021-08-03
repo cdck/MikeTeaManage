@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+SerialProtLibrary/.gitignore
+SerialProtLibrary/local.properties
+SerialProtLibrary/.cxx
+SerialProtLibrary/build
+
