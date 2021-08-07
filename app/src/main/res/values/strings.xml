@@ -18,7 +18,8 @@
     <string name="cleaning_speed">清洗速度</string>
     <string name="discharge_speed">出料速度</string>
     <string name="other">其它</string>
-    <string name="modify_password">更改密码</string>
+    <string name="modify_admin_password">更改管理员密码</string>
+    <string name="modify_pin_password">更改锁屏密码</string>
     <string name="products_a_set">产品一设置</string>
     <string name="products_b_set">产品二设置</string>
     <string name="cleaning_module">清洗模块</string>
@@ -70,4 +71,12 @@
     <string name="the_maximum_value_that_can_be_entered_is_100">可输入的最大值为100</string>
     <string name="only_one_decimal_place_is_allowed">小数位最多只能有一位</string>
     <string name="check_update">检查更新</string>
+    <string name="click_screen_back">点击屏幕返回</string>
+    <string name="please_unlock_first">请先解锁</string>
+    <string name="err_max_length">不能超过%1$s个字符</string>
+    <string name="products_c_set">产品三设置</string>
+    <string name="products_d_set">产品四设置</string>
+    <string name="modify_successfully">修改成功</string>
+    <string name="product_list">产品列表</string>
+    <string name="save_successfully">保存成功</string>
 </resources>

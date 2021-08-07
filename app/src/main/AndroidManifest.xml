@@ -15,13 +15,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/FullTheme">
-        <activity android:name=".view.CleanActivity"></activity>
-        <activity android:name=".view.ProductSetupActivity" />
-        <activity android:name=".view.PasswordActivity" />
-        <activity android:name=".view.config.ConfigActivity" />
+        <activity
+            android:name=".view.ProductActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".view.PlayViewActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".view.CleanActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".view.ProductSetupActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".view.PasswordActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".view.config.ConfigActivity"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".view.main.MainActivity"
-            android:theme="@style/FullTheme">
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

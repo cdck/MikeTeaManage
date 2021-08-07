@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!--  @android:style/Animation   -->
+    <style name="activityAnimation" parent="@android:style/Animation.Activity">
+
+        <item name="android:activityOpenEnterAnimation">@anim/common_slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/common_slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/common_slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/common_slide_out_right</item>
+    </style>
+</resources>

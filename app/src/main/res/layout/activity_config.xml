@@ -295,7 +295,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:text="@string/modify_password"
+                    android:text="@string/modify_admin_password"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/dividing_line" />
+
+            <RelativeLayout
+                android:id="@+id/rl_modify_pin_password"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_height"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/paddingEnd">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/modify_pin_password"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_medium" />
 
@@ -341,7 +360,6 @@
             </RelativeLayout>
 
             <include layout="@layout/dividing_line" />
-
 
             <RelativeLayout
                 android:id="@+id/rl_cleaning_module"

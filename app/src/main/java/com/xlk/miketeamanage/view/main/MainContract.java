@@ -11,5 +11,9 @@ import java.util.function.IntPredicate;
  */
 interface MainContract {
     interface View extends IBaseView{}
-    interface Presenter extends IBasePresenter{}
+    interface Presenter extends IBasePresenter{
+        void initialSerialPort();
+
+        void addCommands(String command);
+    }
 }

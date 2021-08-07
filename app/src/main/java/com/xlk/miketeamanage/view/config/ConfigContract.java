@@ -9,5 +9,12 @@ import com.xlk.miketeamanage.base.IBaseView;
  */
 interface ConfigContract {
     interface View extends IBaseView{}
-    interface Presenter extends IBasePresenter{}
+    interface Presenter extends IBasePresenter{
+        /**
+         * 发送命令
+         * @param command 指令
+         */
+        void addCommands(String command);
+        void initialSerialPort();
+    }
 }

@@ -3,11 +3,13 @@ package com.xlk.miketeamanage.view;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -15,19 +17,19 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.listener.OnResultCallbackListener;
+import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.GlideEngine;
 import com.xlk.miketeamanage.R;
+import com.xlk.miketeamanage.model.MmkvKey;
 
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import es.dmoral.toasty.Toasty;
 
-import static com.luck.picture.lib.config.PictureSelectionConfig.imageEngine;
-
 public class ProductSetupActivity extends AppCompatActivity {
 
+    public static final String extra_product = "extra_product";
     private ImageView ivBack;
     private TextView tvTitle;
     private SwitchMaterial cbOpen;
@@ -42,17 +44,24 @@ public class ProductSetupActivity extends AppCompatActivity {
     /**
      * 当前产品id
      */
-    private int currentProductId;
+    private String currentProduct;
     private RelativeLayout rl_cb;
+    private MMKV mmkv;
+    private String newProductImgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_setup);
+        //屏幕常亮
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         initView();
-        currentProductId = getIntent().getIntExtra("product_id", 0);
         tvTitle.setText(R.string.set_product);
         ivBack.setOnClickListener(v -> finish());
+        currentProduct = getIntent().getStringExtra(extra_product);
+        LogUtils.i("当前产品：" + currentProduct);
+        mmkv = MMKV.mmkvWithID(currentProduct);
+        initDataFromMmkv();
         ivBg.setOnClickListener(v -> {
             PictureSelector.create(this)
                     .openGallery(PictureMimeType.ofImage())//相册 媒体类型 PictureMimeType.ofAll()、ofImage()、ofVideo()、ofAudio()
@@ -63,7 +72,9 @@ public class ProductSetupActivity extends AppCompatActivity {
                     .forResult(PictureConfig.CHOOSE_REQUEST);
         });
         rl_cb.setOnClickListener(v -> {
-            cbOpen.setChecked(!cbOpen.isChecked());
+            boolean checked = !cbOpen.isChecked();
+            cbOpen.setChecked(checked);
+            mmkv.encode(MmkvKey.product_open, checked);
         });
         btnModify.setOnClickListener(v -> {
             String name = edtName.getText().toString();
@@ -76,7 +87,34 @@ public class ProductSetupActivity extends AppCompatActivity {
                 Toasty.error(ProductSetupActivity.this, R.string.incomplete_filling, Toasty.LENGTH_SHORT, true).show();
                 return;
             }
+            mmkv.encode(MmkvKey.product_name, name);
+            mmkv.encode(MmkvKey.product_capacity_a, Integer.parseInt(capacityA));
+            mmkv.encode(MmkvKey.product_capacity_b, Integer.parseInt(capacityB));
+            mmkv.encode(MmkvKey.product_capacity_c, Integer.parseInt(capacityC));
+            mmkv.encode(MmkvKey.product_capacity_d, Integer.parseInt(capacityD));
+            mmkv.encode(MmkvKey.water_pump_capacity, Integer.parseInt(waterPumpCapacity));
+            if (!newProductImgPath.isEmpty()) {
+                mmkv.encode(MmkvKey.product_img, newProductImgPath);
+            }
+            Toasty.success(ProductSetupActivity.this, R.string.save_successfully, Toast.LENGTH_SHORT, true).show();
+            finish();
         });
+    }
+
+    private void initDataFromMmkv() {
+        cbOpen.setChecked(mmkv.decodeBool(MmkvKey.product_open));
+        edtName.setText(mmkv.decodeString(MmkvKey.product_name));
+        String path = mmkv.decodeString(MmkvKey.product_img);
+        if (path != null && !path.isEmpty()) {
+            LogUtils.i("产品图路径=" + path);
+            Drawable drawable = Drawable.createFromPath(path);
+            ivBg.setImageDrawable(drawable);
+        }
+        edtCapacityA.setText(String.valueOf(mmkv.decodeInt(MmkvKey.product_capacity_a)));
+        edtCapacityB.setText(String.valueOf(mmkv.decodeInt(MmkvKey.product_capacity_b)));
+        edtCapacityC.setText(String.valueOf(mmkv.decodeInt(MmkvKey.product_capacity_c)));
+        edtCapacityD.setText(String.valueOf(mmkv.decodeInt(MmkvKey.product_capacity_d)));
+        edtWaterPumpCapacity.setText(String.valueOf(mmkv.decodeInt(MmkvKey.water_pump_capacity)));
     }
 
     private void initView() {
@@ -104,9 +142,9 @@ public class ProductSetupActivity extends AppCompatActivity {
                     List<LocalMedia> result = PictureSelector.obtainMultipleResult(data);
                     if (result != null && !result.isEmpty()) {
                         LocalMedia localMedia = result.get(0);
-                        String path = localMedia.getPath();
-                        LogUtils.i("选择图片的路径：" + path);
-                        Drawable drawable = Drawable.createFromPath(path);
+                        newProductImgPath = localMedia.getPath();
+                        LogUtils.i("选择图片的路径：" + newProductImgPath);
+                        Drawable drawable = Drawable.createFromPath(newProductImgPath);
                         ivBg.setImageDrawable(drawable);
                     }
                     break;

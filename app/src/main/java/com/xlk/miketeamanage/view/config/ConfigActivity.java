@@ -18,8 +18,10 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PhoneUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
+import com.xlk.miketeamanage.model.MmkvKey;
 import com.xlk.miketeamanage.view.CleanActivity;
 import com.xlk.miketeamanage.view.PasswordActivity;
 import com.xlk.miketeamanage.view.ProductSetupActivity;
@@ -27,7 +29,6 @@ import com.xlk.miketeamanage.view.ProductSetupActivity;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import es.dmoral.toasty.Toasty;
 
 /**
  * @author xlk
@@ -50,8 +51,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
     private RelativeLayout rlDischargeSpeed;
     private TextView tvDischargeSpeed;
     private RelativeLayout rlModifyPassword;
-    private RelativeLayout rlProductsASet;
-    private RelativeLayout rlProductsBSet;
+    private RelativeLayout rlProductsASet, rlProductsBSet;
     private RelativeLayout rlCleaningModule;
     private SwitchMaterial cbOpenDebug;
     private RelativeLayout rlExitApp;
@@ -59,6 +59,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
     private RelativeLayout rlOpenDebug;
     private RelativeLayout rl_check_update;
     private TextView tv_version;
+    private RelativeLayout rl_modify_pin_password;
+    private MMKV mmkv;
 
     @Override
     protected int getLayoutId() {
@@ -84,6 +86,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
         rlDischargeSpeed = (RelativeLayout) findViewById(R.id.rl_discharge_speed);
         tvDischargeSpeed = (TextView) findViewById(R.id.tv_discharge_speed);
         rlModifyPassword = (RelativeLayout) findViewById(R.id.rl_modify_password);
+        rl_modify_pin_password = (RelativeLayout) findViewById(R.id.rl_modify_pin_password);
         rlProductsASet = (RelativeLayout) findViewById(R.id.rl_products_a_set);
         rlProductsBSet = (RelativeLayout) findViewById(R.id.rl_products_b_set);
         rlCleaningModule = (RelativeLayout) findViewById(R.id.rl_cleaning_module);
@@ -101,6 +104,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
         rlCleaningSpeed.setOnClickListener(this);
         rlDischargeSpeed.setOnClickListener(this);
         rlModifyPassword.setOnClickListener(this);
+        rl_modify_pin_password.setOnClickListener(this);
         rlProductsASet.setOnClickListener(this);
         rlProductsBSet.setOnClickListener(this);
         rlCleaningModule.setOnClickListener(this);
@@ -119,6 +123,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
 
     @Override
     protected void init(Bundle savedInstanceState) {
+        mmkv = MMKV.defaultMMKV();
+        initDataFromMmkv();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
@@ -127,6 +133,14 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
             tvDevId.setText(serial);
         }
         tv_version.setText(AppUtils.getAppVersionName());
+        presenter.initialSerialPort();
+    }
+
+    private void initDataFromMmkv() {
+        tvStartupTemperature.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.refrigeration_launch_temp, MmkvKey.default_refrigeration_launch_temp)));
+        tvStoppingTemperature.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.refrigeration_stop_temp, MmkvKey.default_refrigeration_stop_temp)));
+        tvCleaningSpeed.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.clean_speed, MmkvKey.default_clean_speed)));
+        tvDischargeSpeed.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.discharge_speed, MmkvKey.default_discharge_speed)));
     }
 
     @Override
@@ -199,22 +213,31 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
             case R.id.rl_check_update: {
                 break;
             }
-            //更改密码
+            //更改管理员密码
             case R.id.rl_modify_password: {
-                startActivity(new Intent(ConfigActivity.this, PasswordActivity.class));
+                Intent intent = new Intent(ConfigActivity.this, PasswordActivity.class);
+                intent.putExtra(PasswordActivity.extra_modify_admin_pwd, true);
+                startActivity(intent);
+                break;
+            }
+            //更改锁屏密码
+            case R.id.rl_modify_pin_password: {
+                Intent intent = new Intent(ConfigActivity.this, PasswordActivity.class);
+                intent.putExtra(PasswordActivity.extra_modify_admin_pwd, false);
+                startActivity(intent);
                 break;
             }
             //产品一设置
             case R.id.rl_products_a_set: {
                 Intent intent = new Intent(ConfigActivity.this, ProductSetupActivity.class);
-                intent.putExtra("product_id", 1);
+                intent.putExtra(ProductSetupActivity.extra_product, "product_a");
                 startActivity(intent);
                 break;
             }
             //产品二设置
             case R.id.rl_products_b_set: {
                 Intent intent = new Intent(ConfigActivity.this, ProductSetupActivity.class);
-                intent.putExtra("product_id", 2);
+                intent.putExtra(ProductSetupActivity.extra_product, "product_b");
                 startActivity(intent);
                 break;
             }
@@ -313,8 +336,10 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                     String string = dialog.getInputEditText().getText().toString();
                     if (isStart) {
                         tvStartupTemperature.setText(string);
+                        mmkv.encode(MmkvKey.refrigeration_launch_temp, Float.parseFloat(string));
                     } else {
                         tvStoppingTemperature.setText(string);
+                        mmkv.encode(MmkvKey.refrigeration_stop_temp, Float.parseFloat(string));
                     }
                 })
                 .show();
@@ -368,6 +393,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
                     tvCleaningSpeed.setText(string);
+                    mmkv.encode(MmkvKey.clean_speed, Float.parseFloat(string));
                 })
                 .show();
     }
@@ -420,6 +446,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
                     tvDischargeSpeed.setText(string);
+                    mmkv.encode(MmkvKey.discharge_speed, Float.parseFloat(string));
                 })
                 .show();
     }
