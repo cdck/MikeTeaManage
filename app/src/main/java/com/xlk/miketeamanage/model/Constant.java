@@ -9,6 +9,7 @@ public class Constant {
      * 串口地址
      */
     public static String path = "dev/ttyS1";
+//    public static String path = "/dev/ttyS0";
     /**
      * 波特率
      */

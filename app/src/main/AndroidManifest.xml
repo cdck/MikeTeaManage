@@ -22,7 +22,7 @@
             android:name=".view.PlayViewActivity"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".view.CleanActivity"
+            android:name=".view.clean.CleanActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name=".view.ProductSetupActivity"

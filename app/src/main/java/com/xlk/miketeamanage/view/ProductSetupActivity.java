@@ -93,7 +93,7 @@ public class ProductSetupActivity extends AppCompatActivity {
             mmkv.encode(MmkvKey.product_capacity_c, Integer.parseInt(capacityC));
             mmkv.encode(MmkvKey.product_capacity_d, Integer.parseInt(capacityD));
             mmkv.encode(MmkvKey.water_pump_capacity, Integer.parseInt(waterPumpCapacity));
-            if (!newProductImgPath.isEmpty()) {
+            if (newProductImgPath != null && !newProductImgPath.isEmpty()) {
                 mmkv.encode(MmkvKey.product_img, newProductImgPath);
             }
             Toasty.success(ProductSetupActivity.this, R.string.save_successfully, Toast.LENGTH_SHORT, true).show();

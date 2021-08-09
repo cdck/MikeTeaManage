@@ -1,21 +1,16 @@
-package com.xlk.miketeamanage.view.config;
+package com.xlk.miketeamanage.view.clean;
 
 import com.xlk.miketeamanage.base.IBasePresenter;
 import com.xlk.miketeamanage.base.IBaseView;
 
 /**
- * @author Created by xlk on 2021/7/30.
+ * @author Created by xlk on 2021/8/9.
  * @desc
  */
-interface ConfigContract {
-    interface View extends IBaseView {
-        /**
-         * 更新启动制冷，选中状态取反
-         */
-        void updateTemperature();
-    }
+interface CleanContract {
+    interface View extends IBaseView{}
+    interface Presenter extends IBasePresenter{
 
-    interface Presenter extends IBasePresenter {
         /**
          * 初始化串口
          */
@@ -27,7 +22,5 @@ interface ConfigContract {
          * @param command 指令
          */
         void addCommands(String command);
-
-        void exit();
     }
 }

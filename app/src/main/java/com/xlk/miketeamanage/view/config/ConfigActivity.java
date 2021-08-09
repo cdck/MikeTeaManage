@@ -6,11 +6,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -21,19 +19,23 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
+import com.xlk.miketeamanage.model.Command;
 import com.xlk.miketeamanage.model.MmkvKey;
-import com.xlk.miketeamanage.view.CleanActivity;
+import com.xlk.miketeamanage.view.clean.CleanActivity;
 import com.xlk.miketeamanage.view.PasswordActivity;
 import com.xlk.miketeamanage.view.ProductSetupActivity;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import es.dmoral.toasty.Toasty;
+
+import static com.xlk.miketeamanage.helper.DataDisposal.float2int;
 
 /**
  * @author xlk
  */
-public class ConfigActivity extends BaseActivity<ConfigPresenter> implements ConfigContract.View, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class ConfigActivity extends BaseActivity<ConfigPresenter> implements ConfigContract.View, View.OnClickListener {
 
     private ImageView ivBack;
     private TextView tvTitle;
@@ -111,9 +113,6 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
         rl_check_update.setOnClickListener(this);
         rlOpenDebug.setOnClickListener(this);
         rlExitApp.setOnClickListener(this);
-
-        cbStartCooling.setOnCheckedChangeListener(this);
-        cbOpenDebug.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -137,10 +136,10 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
     }
 
     private void initDataFromMmkv() {
-        tvStartupTemperature.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.refrigeration_launch_temp, MmkvKey.default_refrigeration_launch_temp)));
-        tvStoppingTemperature.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.refrigeration_stop_temp, MmkvKey.default_refrigeration_stop_temp)));
-        tvCleaningSpeed.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.clean_speed, MmkvKey.default_clean_speed)));
-        tvDischargeSpeed.setText(String.valueOf(mmkv.decodeFloat(MmkvKey.discharge_speed, MmkvKey.default_discharge_speed)));
+        tvStartupTemperature.setText(String.valueOf(mmkv.decodeInt(MmkvKey.refrigeration_launch_temp, MmkvKey.default_refrigeration_launch_temp)));
+        tvStoppingTemperature.setText(String.valueOf(mmkv.decodeInt(MmkvKey.refrigeration_stop_temp, MmkvKey.default_refrigeration_stop_temp)));
+        tvCleaningSpeed.setText(String.valueOf(mmkv.decodeInt(MmkvKey.clean_speed, MmkvKey.default_clean_speed)));
+        tvDischargeSpeed.setText(String.valueOf(mmkv.decodeInt(MmkvKey.discharge_speed, MmkvKey.default_discharge_speed)));
     }
 
     @Override
@@ -159,12 +158,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (buttonView.getId() == R.id.cb_start_cooling) {
-            LogUtils.i("onCheckedChanged 启动制冷 isChecked=" + isChecked);
-        } else {
-            LogUtils.i("onCheckedChanged 打开调试 isChecked=" + isChecked);
-        }
+    public void updateTemperature() {
+        cbStartCooling.setChecked(!cbStartCooling.isChecked());
     }
 
     @Override
@@ -196,7 +191,14 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
             }
             //启动制冷
             case R.id.rl_start_cooling: {//启动制冷
-                cbStartCooling.setChecked(!cbStartCooling.isChecked());
+                boolean checked = !cbStartCooling.isChecked();
+                if (checked) {
+                    //启动制冷
+                    presenter.addCommands(Command.temperature("AA"));
+                } else {
+                    //关闭制冷
+                    presenter.addCommands(Command.temperature("00"));
+                }
                 break;
             }
             //清洗速度
@@ -230,14 +232,14 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
             //产品一设置
             case R.id.rl_products_a_set: {
                 Intent intent = new Intent(ConfigActivity.this, ProductSetupActivity.class);
-                intent.putExtra(ProductSetupActivity.extra_product, "product_a");
+                intent.putExtra(ProductSetupActivity.extra_product, MmkvKey.product_a);
                 startActivity(intent);
                 break;
             }
             //产品二设置
             case R.id.rl_products_b_set: {
                 Intent intent = new Intent(ConfigActivity.this, ProductSetupActivity.class);
-                intent.putExtra(ProductSetupActivity.extra_product, "product_b");
+                intent.putExtra(ProductSetupActivity.extra_product, MmkvKey.product_b);
                 startActivity(intent);
                 break;
             }
@@ -253,6 +255,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
             }
             //退出APP
             case R.id.rl_exit_app: {
+                presenter.exit();
                 AppUtils.exitApp();
                 break;
             }
@@ -305,8 +308,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                             String string = input.toString();
                             float value = Float.parseFloat(string);
                             if (value > 100) {
-//                                Toasty.warning(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toasty.LENGTH_SHORT, true);
-                                Toast.makeText(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toast.LENGTH_SHORT).show();
+                                Toasty.warning(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toasty.LENGTH_SHORT, true).show();
+//                                Toast.makeText(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toast.LENGTH_SHORT).show();
                                 dialog.getInputEditText().setText(String.valueOf(100));
                                 dialog.getInputEditText().setSelection(String.valueOf(100).length());
                             }
@@ -315,8 +318,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                                 String end = string.substring(string.indexOf(".") + 1, string.indexOf(".") + 2);
                                 String substring = string.substring(string.indexOf(".") + 1);
                                 if (substring.length() > 1) {
-//                                    Toasty.warning(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toasty.LENGTH_SHORT, true);
-                                    Toast.makeText(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toast.LENGTH_SHORT).show();
+                                    Toasty.warning(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toasty.LENGTH_SHORT, true).show();
+//                                    Toast.makeText(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toast.LENGTH_SHORT).show();
                                     dialog.getInputEditText().setText(pre + "." + end);
                                     dialog.getInputEditText().setSelection((pre + "." + end).length());
                                 }
@@ -334,12 +337,17 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                 .onPositive((dialog, which) -> {
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
+                    int value = float2int(Float.parseFloat(string));
                     if (isStart) {
                         tvStartupTemperature.setText(string);
-                        mmkv.encode(MmkvKey.refrigeration_launch_temp, Float.parseFloat(string));
+                        mmkv.encode(MmkvKey.refrigeration_launch_temp, value);
+                        int v = mmkv.decodeInt(MmkvKey.refrigeration_stop_temp);
+                        presenter.addCommands(Command.temperatureSetting(value, v));
                     } else {
                         tvStoppingTemperature.setText(string);
-                        mmkv.encode(MmkvKey.refrigeration_stop_temp, Float.parseFloat(string));
+                        mmkv.encode(MmkvKey.refrigeration_stop_temp, value);
+                        int v = mmkv.decodeInt(MmkvKey.refrigeration_launch_temp);
+                        presenter.addCommands(Command.temperatureSetting(v, value));
                     }
                 })
                 .show();
@@ -362,9 +370,9 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                         if (input.length() > 0) {
                             String string = input.toString();
                             float value = Float.parseFloat(string);
-                            if (value > 30) {
-//                                Toasty.warning(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toasty.LENGTH_SHORT, true);
-                                Toast.makeText(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toast.LENGTH_SHORT).show();
+                            if (value >= 30) {
+                                Toasty.warning(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toasty.LENGTH_SHORT, true).show();
+//                                Toast.makeText(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toast.LENGTH_SHORT).show();
                                 dialog.getInputEditText().setText(String.valueOf(30));
                                 dialog.getInputEditText().setSelection(String.valueOf(30).length());
                             }
@@ -373,8 +381,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                                 String end = string.substring(string.indexOf(".") + 1, string.indexOf(".") + 2);
                                 String substring = string.substring(string.indexOf(".") + 1);
                                 if (substring.length() > 1) {
-//                                    Toasty.warning(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toasty.LENGTH_SHORT, true);
-                                    Toast.makeText(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toast.LENGTH_SHORT).show();
+                                    Toasty.warning(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toasty.LENGTH_SHORT, true).show();
+//                                    Toast.makeText(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toast.LENGTH_SHORT).show();
                                     dialog.getInputEditText().setText(pre + "." + end);
                                     dialog.getInputEditText().setSelection((pre + "." + end).length());
                                 }
@@ -393,7 +401,9 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
                     tvCleaningSpeed.setText(string);
-                    mmkv.encode(MmkvKey.clean_speed, Float.parseFloat(string));
+                    int value = float2int(Float.parseFloat(string));
+                    mmkv.encode(MmkvKey.clean_speed, value);
+                    presenter.addCommands(Command.cleanSpeed(value));
                 })
                 .show();
     }
@@ -415,9 +425,9 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                         if (input.length() > 0) {
                             String string = input.toString();
                             float value = Float.parseFloat(string);
-                            if (value > 30) {
-//                                Toasty.warning(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toasty.LENGTH_SHORT, true);
-                                Toast.makeText(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toast.LENGTH_SHORT).show();
+                            if (value >= 30) {
+                                Toasty.warning(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toasty.LENGTH_SHORT, true).show();
+//                                Toast.makeText(ConfigActivity.this, R.string.the_maximum_value_that_can_be_entered_is_100, Toast.LENGTH_SHORT).show();
                                 dialog.getInputEditText().setText(String.valueOf(30));
                                 dialog.getInputEditText().setSelection(String.valueOf(30).length());
                             }
@@ -426,8 +436,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                                 String end = string.substring(string.indexOf(".") + 1, string.indexOf(".") + 2);
                                 String substring = string.substring(string.indexOf(".") + 1);
                                 if (substring.length() > 1) {
-//                                    Toasty.warning(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toasty.LENGTH_SHORT, true);
-                                    Toast.makeText(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toast.LENGTH_SHORT).show();
+                                    Toasty.warning(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toasty.LENGTH_SHORT, true).show();
+//                                    Toast.makeText(ConfigActivity.this, R.string.only_one_decimal_place_is_allowed, Toast.LENGTH_SHORT).show();
                                     dialog.getInputEditText().setText(pre + "." + end);
                                     dialog.getInputEditText().setSelection((pre + "." + end).length());
                                 }
@@ -446,7 +456,9 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
                     tvDischargeSpeed.setText(string);
-                    mmkv.encode(MmkvKey.discharge_speed, Float.parseFloat(string));
+                    int value = float2int(Float.parseFloat(string));
+                    mmkv.encode(MmkvKey.discharge_speed, value);
+                    presenter.addCommands(Command.dischargeSpeed(value));
                 })
                 .show();
     }

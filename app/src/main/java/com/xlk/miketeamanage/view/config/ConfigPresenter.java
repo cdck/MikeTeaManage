@@ -2,19 +2,25 @@ package com.xlk.miketeamanage.view.config;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.xlk.miketeamanage.base.BasePresenter;
+import com.xlk.miketeamanage.helper.SerialPortUtil;
+import com.xlk.miketeamanage.model.Command;
+import com.xlk.miketeamanage.model.Constant;
 import com.xlk.miketeamanage.model.EventMessage;
 
-import top.keepempty.sph.library.SerialPortHelper;
+import es.dmoral.toasty.Toasty;
 import top.keepempty.sph.library.SphCmdEntity;
-import top.keepempty.sph.library.SphResultCallback;
+
+import static com.xlk.miketeamanage.App.appContext;
 
 /**
  * @author Created by xlk on 2021/7/30.
  * @desc
  */
-class ConfigPresenter extends BasePresenter<ConfigContract.View> implements ConfigContract.Presenter, SphResultCallback {
+class ConfigPresenter extends BasePresenter<ConfigContract.View> implements ConfigContract.Presenter {
 
-    private SerialPortHelper serialPortHelper;
+
+    private SerialPortUtil instance;
+
 
     public ConfigPresenter(ConfigContract.View view) {
         super(view);
@@ -22,35 +28,43 @@ class ConfigPresenter extends BasePresenter<ConfigContract.View> implements Conf
 
     @Override
     protected void busEvent(EventMessage msg) {
-
+        switch (msg.getType()) {
+            case Constant.bus_send: {
+                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
+//                LogUtils.i("bus_send=" + sphCmdEntity.commandsHex);
+                break;
+            }
+            case Constant.bus_receive: {
+//                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
+//                if (sphCmdEntity.commandsHex.equals(Command.success_temperature)) {
+//                    mView.updateTemperature();
+//                } else if (sphCmdEntity.commandsHex.equals(Command.success_temperature_temp)) {
+//                    Toasty.success(appContext, "启动或停止制冷成功", Toasty.LENGTH_SHORT, true).show();
+//                }
+                break;
+            }
+            case Constant.bus_complete: {
+                LogUtils.i("bus_complete");
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     @Override
     public void initialSerialPort() {
-        serialPortHelper = new SerialPortHelper(32, true);
-        if (!serialPortHelper.isOpenDevice()) {
-            serialPortHelper.openDevice("dev/ttyS0", 11520);
-        }
-        serialPortHelper.setSphResultCallback(this);
+        instance = SerialPortUtil.getInstance();
     }
 
     @Override
     public void addCommands(String command) {
-        serialPortHelper.addCommands(command);
+        instance.addCommands(command);
     }
 
     @Override
-    public void onSendData(SphCmdEntity sendCom) {
-        LogUtils.i("onSendData sendCom=" + sendCom);
-    }
-
-    @Override
-    public void onReceiveData(SphCmdEntity data) {
-        LogUtils.i("onReceiveData data=" + data);
-    }
-
-    @Override
-    public void onComplete() {
-        LogUtils.i("onComplete");
+    public void exit() {
+        LogUtils.e("关闭串口");
+        instance.closeDevice();
     }
 }

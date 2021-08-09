@@ -26,6 +26,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
+import com.xlk.miketeamanage.helper.DataDisposal;
 import com.xlk.miketeamanage.model.Command;
 import com.xlk.miketeamanage.model.MmkvKey;
 import com.xlk.miketeamanage.view.PlayViewActivity;
@@ -61,6 +62,11 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
      * 当前是否锁屏
      */
     private boolean isLocked = false;
+    /**
+     * 产品1和产品2是否开启
+     */
+    private boolean isOpenA, isOpenB;
+    private Timer queryTempTimer;
 
     @Override
     protected int getLayoutId() {
@@ -109,10 +115,23 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         mmkv = MMKV.defaultMMKV();
         initLockView();
         presenter.initialSerialPort();
-        Command.temp(10,6);
         a_btn.setOnClickListener(v -> {
-            presenter.addCommands(Command.temp + "");
-//            startActivity(new Intent(MainActivity.this, ConfigActivity.class));
+            MMKV productA = MMKV.mmkvWithID(MmkvKey.product_a);
+            int product_capacity_a = productA.decodeInt(MmkvKey.product_capacity_a);
+            int product_capacity_b = productA.decodeInt(MmkvKey.product_capacity_b);
+            int product_capacity_c = productA.decodeInt(MmkvKey.product_capacity_c);
+            int product_capacity_d = productA.decodeInt(MmkvKey.product_capacity_d);
+            int water_pump_capacity = productA.decodeInt(MmkvKey.water_pump_capacity);
+            presenter.addCommands(Command.drink(product_capacity_a, product_capacity_b, product_capacity_c, product_capacity_d, water_pump_capacity));
+        });
+        b_btn.setOnClickListener(v -> {
+            MMKV productB = MMKV.mmkvWithID(MmkvKey.product_b);
+            int product_capacity_a = productB.decodeInt(MmkvKey.product_capacity_a);
+            int product_capacity_b = productB.decodeInt(MmkvKey.product_capacity_b);
+            int product_capacity_c = productB.decodeInt(MmkvKey.product_capacity_c);
+            int product_capacity_d = productB.decodeInt(MmkvKey.product_capacity_d);
+            int water_pump_capacity = productB.decodeInt(MmkvKey.water_pump_capacity);
+            presenter.addCommands(Command.drink(product_capacity_a, product_capacity_b, product_capacity_c, product_capacity_d, water_pump_capacity));
         });
     }
 
@@ -120,8 +139,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
      * 根据配置显示或隐藏相应产品视图
      */
     private void initViewByMmkv() {
-        MMKV product_a = MMKV.mmkvWithID("product_a");
-        boolean isOpenA = product_a.decodeBool(MmkvKey.product_open);
+        MMKV product_a = MMKV.mmkvWithID(MmkvKey.product_a);
+        isOpenA = product_a.decodeBool(MmkvKey.product_open);
         a.setVisibility(isOpenA ? View.VISIBLE : View.GONE);
         a_content.setText(product_a.decodeString(MmkvKey.product_name));
         String aPath = product_a.decodeString(MmkvKey.product_img);
@@ -129,8 +148,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
             Drawable drawable = Drawable.createFromPath(aPath);
             a.setBackground(drawable);
         }
-        MMKV product_b = MMKV.mmkvWithID("product_b");
-        boolean isOpenB = product_b.decodeBool(MmkvKey.product_open);
+        MMKV product_b = MMKV.mmkvWithID(MmkvKey.product_b);
+        isOpenB = product_b.decodeBool(MmkvKey.product_open);
         b_content.setText(product_b.decodeString(MmkvKey.product_name));
         String bPath = product_b.decodeString(MmkvKey.product_img);
         if (FileUtils.isFileExists(bPath)) {
@@ -318,6 +337,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     @Override
     protected void onResume() {
         initViewByMmkv();
+//        startQueryTempTimer();
         startScreenSaverTimer();
         super.onResume();
     }
@@ -325,9 +345,41 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     @Override
     protected void onDestroy() {
         stopScreenSaverTimer();
+        stopQueryTempTimer();
         super.onDestroy();
     }
 
+    /**
+     * 开始查询温度倒计时任务
+     */
+    private void startQueryTempTimer() {
+        if (queryTempTimer == null) {
+            queryTempTimer = new Timer();
+            queryTempTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //10秒发送一次查询温度的指令
+                    presenter.addCommands(Command.queryTemp());
+                }
+            }, 10 * 1000);
+        }
+    }
+
+    /**
+     * 停止查询温度倒计时任务
+     */
+    private void stopQueryTempTimer() {
+        if (queryTempTimer != null) {
+            LogUtils.i("停止查询温度倒计时");
+            queryTempTimer.cancel();
+            queryTempTimer.purge();
+            queryTempTimer = null;
+        }
+    }
+
+    /**
+     * 停止屏保倒计时任务
+     */
     private void stopScreenSaverTimer() {
         if (screenSaverTimer != null) {
             LogUtils.i("停止屏保倒计时");
@@ -351,7 +403,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
     /**
-     * 开始屏保倒计时
+     * 开始屏保倒计时任务
      */
     private void startScreenSaverTimer() {
         if (!isCanCountdown()) {

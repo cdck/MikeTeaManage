@@ -1,10 +1,20 @@
 package com.xlk.miketeamanage.model;
 
+import android.os.Bundle;
+
 /**
  * @author Created by xlk on 2021/7/30.
  * @desc
  */
 public class MmkvKey {
+    /**
+     * 产品一
+     */
+    public static final String product_a = "product_a";
+    /**
+     * 产品二
+     */
+    public static final String product_b = "product_b";
     /**
      * 管理员密码
      */
@@ -35,26 +45,27 @@ public class MmkvKey {
      * 制冷启动温度
      */
     public static final String refrigeration_launch_temp = "refrigeration_launch_temp";
-    public static final float default_refrigeration_launch_temp = 0f;
+    public static final int default_refrigeration_launch_temp = 0;
     /**
      * 制冷停止温度
      */
     public static final String refrigeration_stop_temp = "refrigeration_stop_temp";
-    public static final float default_refrigeration_stop_temp = 0f;
+    public static final int default_refrigeration_stop_temp = 0;
     /**
      * 清洗速度
      */
     public static final String clean_speed = "clean_speed";
-    public static final float default_clean_speed = 0f;
+    public static final int default_clean_speed = 0;
     /**
      * 出料速度
      */
     public static final String discharge_speed = "discharge_speed";
-    public static final float default_discharge_speed = 0f;
+    public static final int default_discharge_speed = 0;
     /**
      * 产品名称（产品设置相关的key都是根据产品进行独立存储的）
      * MMKV.mmkvWithID()
-     * 2021年8月7日17:30:55 当前已固定的产品："product_a"和"product_b"
+     * 当前已固定的产品：{@link MmkvKey#product_a}.和{@link MmkvKey#product_b}.
+     *
      */
     public static final String product_name = "product_name";
     /**

@@ -2,6 +2,7 @@ package com.xlk.miketeamanage;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.blankj.utilcode.util.LogUtils;
@@ -15,9 +16,12 @@ import androidx.annotation.Nullable;
  * @desc
  */
 public class App extends Application {
+    public static Context appContext;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        appContext = this;
         LogUtils.Config config = LogUtils.getConfig();
         config.setLog2FileSwitch(true);
         config.setDir(getFilesDir());

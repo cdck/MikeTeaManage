@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.xlk.miketeamanage.model.Constant;
 import com.xlk.miketeamanage.model.EventMessage;
 
@@ -21,6 +22,7 @@ import top.keepempty.sph.library.SphResultCallback;
  */
 public class BackServer extends Service implements SphResultCallback {
     private SerialPortHelper serialPortHelper;
+    public static boolean isOpen;
 
 
     @Nullable
@@ -32,13 +34,14 @@ public class BackServer extends Service implements SphResultCallback {
     @Override
     public void onCreate() {
         super.onCreate();
+        isOpen = true;
         SerialPortConfig serialPortConfig = new SerialPortConfig();
         serialPortConfig.path = Constant.path;
         serialPortConfig.baudRate = Constant.baudRate;
         serialPortConfig.dataBits = Constant.dataBits;
         serialPortConfig.stopBits = Constant.stopBits;
         serialPortHelper = new SerialPortHelper(32, true, serialPortConfig);
-        serialPortHelper.openDevice(Constant.path, Constant.baudRate);
+        serialPortHelper.openDevice();
         // 数据接收回调
         serialPortHelper.setSphResultCallback(this);
     }
@@ -46,6 +49,7 @@ public class BackServer extends Service implements SphResultCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        isOpen = false;
     }
 
     @Override
@@ -55,16 +59,19 @@ public class BackServer extends Service implements SphResultCallback {
 
     @Override
     public void onSendData(SphCmdEntity sendCom) {
+        LogUtils.i("onSendData sendCom=" + sendCom.commandsHex);
         EventBus.getDefault().post(new EventMessage.Builder().type(Constant.bus_send).objects(sendCom).build());
     }
 
     @Override
     public void onReceiveData(SphCmdEntity data) {
+        LogUtils.i("SphCmdEntity data=" + data.commandsHex);
         EventBus.getDefault().post(new EventMessage.Builder().type(Constant.bus_receive).objects(data).build());
     }
 
     @Override
     public void onComplete() {
+        LogUtils.i("onComplete");
         EventBus.getDefault().post(new EventMessage.Builder().type(Constant.bus_complete).build());
     }
 }

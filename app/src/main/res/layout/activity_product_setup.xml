@@ -121,6 +121,10 @@
                     android:maxLength="4"
                     android:singleLine="true"
                     android:textSize="@dimen/text_size_normal" />
+                <Button
+                    android:text="测试"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
 
