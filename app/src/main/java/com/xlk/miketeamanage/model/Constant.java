@@ -8,8 +8,7 @@ public class Constant {
     /**
      * 串口地址
      */
-    public static String path = "dev/ttyS1";
-//    public static String path = "/dev/ttyS0";
+    public static String path = "/dev/ttyS1";
     /**
      * 波特率
      */
@@ -28,7 +27,7 @@ public class Constant {
      * E 偶校验位
      * N 清除校验位
      */
-    public static final char parity = 'n';
+    public static final char parity = 'N';
 
     public static final int bus_send = 1;
     public static final int bus_receive = 2;

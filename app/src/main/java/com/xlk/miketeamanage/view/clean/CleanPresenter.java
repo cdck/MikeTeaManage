@@ -24,7 +24,6 @@ import static com.xlk.miketeamanage.App.appContext;
  */
 class CleanPresenter extends BasePresenter<CleanContract.View> implements CleanContract.Presenter {
     private SerialPortUtil instance;
-//    private SerialPortHelper serialPortHelper;
 
     public CleanPresenter(CleanContract.View view) {
         super(view);

@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:background="@color/text_view_bg"
             android:padding="5dp"
+            android:visibility="gone"
             android:layout_margin="10dp"
             android:text="@string/app_name"
             android:textColor="@color/white"
@@ -67,6 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/text_view_bg"
+            android:visibility="gone"
             android:padding="5dp"
             android:layout_margin="10dp"
             android:text="@string/app_name"
@@ -110,6 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:visibility="gone"
             android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="14sp" />
@@ -151,6 +154,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:visibility="gone"
             android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="14sp" />

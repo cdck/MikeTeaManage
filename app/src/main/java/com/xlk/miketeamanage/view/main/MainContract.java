@@ -10,7 +10,13 @@ import java.util.function.IntPredicate;
  * @desc
  */
 interface MainContract {
-    interface View extends IBaseView{}
+    interface View extends IBaseView{
+        /**
+         * 更新温度
+         * @param temp 温度
+         */
+        void updateTemp(float temp);
+    }
     interface Presenter extends IBasePresenter{
         void initialSerialPort();
 

@@ -13,7 +13,7 @@ import android_serialport_api.SerialPort;
  * @author Created by xlk on 2021/8/2.
  * @desc
  */
-public class SerialPortUtil {
+public class MySerialPortUtil {
     private SerialPort serialPort = null;
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
@@ -26,7 +26,7 @@ public class SerialPortUtil {
      */
     public void openSerialPort() {
         try {
-            serialPort = new SerialPort(new File("/dev/ttyS0"), 9600, 0);
+            serialPort = new SerialPort(new File("/dev/ttyS1"), 9600, 0);
             //调用对象SerialPort方法，获取串口中"读和写"的数据流
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();

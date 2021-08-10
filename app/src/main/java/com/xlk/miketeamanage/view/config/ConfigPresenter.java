@@ -19,7 +19,7 @@ import static com.xlk.miketeamanage.App.appContext;
 class ConfigPresenter extends BasePresenter<ConfigContract.View> implements ConfigContract.Presenter {
 
 
-    private SerialPortUtil instance;
+    private SerialPortUtil helper;
 
 
     public ConfigPresenter(ConfigContract.View view) {
@@ -30,21 +30,28 @@ class ConfigPresenter extends BasePresenter<ConfigContract.View> implements Conf
     protected void busEvent(EventMessage msg) {
         switch (msg.getType()) {
             case Constant.bus_send: {
-                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
+//                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
 //                LogUtils.i("bus_send=" + sphCmdEntity.commandsHex);
                 break;
             }
             case Constant.bus_receive: {
-//                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
-//                if (sphCmdEntity.commandsHex.equals(Command.success_temperature)) {
-//                    mView.updateTemperature();
-//                } else if (sphCmdEntity.commandsHex.equals(Command.success_temperature_temp)) {
-//                    Toasty.success(appContext, "启动或停止制冷成功", Toasty.LENGTH_SHORT, true).show();
-//                }
+                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
+                if (sphCmdEntity.commandsHex.equals(Command.success_temperature)) {
+                    mView.updateTemperature();
+                } else if (sphCmdEntity.commandsHex.equals(Command.success_temperature_temp)) {
+                    Toasty.success(appContext, "设置启动或停止制冷温度成功", Toasty.LENGTH_SHORT, true).show();
+                    LogUtils.i("设置启动或停止制冷温度成功");
+                } else if (sphCmdEntity.commandsHex.equals(Command.success_clean_speed)) {
+                    Toasty.success(appContext, "设置清洗速度成功", Toasty.LENGTH_SHORT, true).show();
+                    LogUtils.i("设置清洗速度成功");
+                } else if (sphCmdEntity.commandsHex.equals(Command.success_discharge_speed)) {
+                    Toasty.success(appContext, "设置出料速度成功", Toasty.LENGTH_SHORT, true).show();
+                    LogUtils.i("设置出料速度成功");
+                }
                 break;
             }
             case Constant.bus_complete: {
-                LogUtils.i("bus_complete");
+//                LogUtils.i("bus_complete");
                 break;
             }
             default:
@@ -54,17 +61,17 @@ class ConfigPresenter extends BasePresenter<ConfigContract.View> implements Conf
 
     @Override
     public void initialSerialPort() {
-        instance = SerialPortUtil.getInstance();
+        helper = SerialPortUtil.getInstance();
     }
 
     @Override
     public void addCommands(String command) {
-        instance.addCommands(command);
+        helper.addCommands(command);
     }
 
     @Override
     public void exit() {
         LogUtils.e("关闭串口");
-        instance.closeDevice();
+        helper.closeDevice();
     }
 }

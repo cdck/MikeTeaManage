@@ -12,23 +12,23 @@ public class DataDisposal {
             {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
-     * 16进制转10进制数
+     * 16进制字符串转10进制数
      *
      * @param inHex 16进制字符
-     * @return eg: A6 -> 166
+     * @return eg: 0x0A -> 10
      */
     public static int hexString2Int(String inHex) {
         return Integer.parseInt(inHex, 16);
     }
 
     /**
-     * 10进制转16进制
+     * 10进制数转16进制字符串
      *
      * @param intHex 10进制数 一般是int型数据 eg:10
-     * @return eg: 10 -> A
+     * @return eg: 10 -> 0x0A
      */
     public static String int2HexString(int intHex) {
-        return Integer.toHexString(intHex);
+        return Integer.toHexString(intHex).toUpperCase();
     }
 
     /**
@@ -132,15 +132,15 @@ public class DataDisposal {
     }
 
     //1字节转2个Hex字符
-    public static String Byte2Hex(Byte inByte) {
+    public static String byte2Hex(Byte inByte) {
         return String.format("%02x", new Object[]{inByte}).toUpperCase();
     }
 
     //字节数组转转hex字符串
-    public static String ByteArrToHex(byte[] inBytArr) {
+    public static String byteArr2Hex(byte[] inBytArr) {
         StringBuilder strBuilder = new StringBuilder();
         for (byte valueOf : inBytArr) {
-            strBuilder.append(Byte2Hex(Byte.valueOf(valueOf)));
+            strBuilder.append(byte2Hex(Byte.valueOf(valueOf)));
             strBuilder.append(" ");
         }
         return strBuilder.toString();
@@ -163,11 +163,46 @@ public class DataDisposal {
 
     /* **** ** 高8位和低8位计算： https://www.zhihu.com/question/454843238  ** **** */
     public static String high8HexString(int num) {
-        return int2HexString(num / 256);
+//        int high8 = num / 256;
+//        int high8 = (num & 0xff00) >> 8;
+//        int high8 = num >> 8;
+        /* **** **  https://blog.csdn.net/u014141461/article/details/116856369  ** **** */
+        int high8 = (byte) (num & 0xff);
+        return int2HexString(high8);
     }
 
     public static String low8HexString(int num) {
-        return int2HexString(num % 256);
+//        int low8 = num % 256;
+//        int low8 = num & 0x00ff;
+//        int low8 = num & 0x00ff;
+        /* **** **  https://blog.csdn.net/u014141461/article/details/116856369  ** **** */
+        int low8 = (byte) ((num & 0xff00) >> 8);
+        return int2HexString(low8);
+    }
+
+    /**
+     * 将两个16进制的高8位和低8位还原成float类型的实际数值
+     *
+     * @param high8 高8位字符 e.g: "01"
+     * @param low8  低8位字符 e.g: "2C"
+     * @return float类型的实际数值
+     */
+    public static float combineFloat(String high8, String low8) {
+        int high = DataDisposal.hexString2Int(high8);
+        int low = DataDisposal.hexString2Int(low8);
+        return ((float) (high * 256) + low) / 10;
+    }
+    /**
+     * 将两个16进制的高8位和低8位还原成float类型的实际数值
+     *
+     * @param high8 高8位字符 e.g: "01"
+     * @param low8  低8位字符 e.g: "2C"
+     * @return int类型的实际数值
+     */
+    public static int combineInt(String high8, String low8) {
+        int high = DataDisposal.hexString2Int(high8);
+        int low = DataDisposal.hexString2Int(low8);
+        return ((high * 256) + low) / 10;
     }
 
     /**

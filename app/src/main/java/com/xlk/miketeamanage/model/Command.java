@@ -33,6 +33,14 @@ public class Command {
      * 发送启动/停止制冷指令后，如果成功则返回该值
      */
     public static final String success_temperature = "ADAA07" + commandEnd;
+    /**
+     * 设置清洗速度成功
+     */
+    public static final String success_clean_speed = "A7AA0D" + commandEnd;
+    /**
+     * 设置出料速度成功
+     */
+    public static final String success_discharge_speed = "A5AA0F" + commandEnd;
 
 
     /**

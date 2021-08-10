@@ -11,7 +11,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
 import top.keepempty.sph.library.SerialPortConfig;
 import top.keepempty.sph.library.SerialPortHelper;
 import top.keepempty.sph.library.SphCmdEntity;
@@ -25,7 +24,7 @@ import static com.xlk.miketeamanage.App.appContext;
  */
 public class SerialPortUtil {
     private static SerialPortUtil instance;
-    private static SerialPortHelper serialPortHelper;
+    private static SerialPortHelper helper;
 
     public static SerialPortUtil getInstance() {
         if (instance == null) {
@@ -39,11 +38,11 @@ public class SerialPortUtil {
     }
 
     public boolean isOpenDevice() {
-        return serialPortHelper.isOpenDevice();
+        return helper.isOpenDevice();
     }
 
     public void openDevice() {
-        boolean openDevice = serialPortHelper.openDevice();
+        boolean openDevice = helper.openDevice();
         Toast.makeText(appContext, "是否成功开启串口:" + openDevice, Toast.LENGTH_SHORT).show();
         LogUtils.i("是否成功开启串口：" + openDevice);
     }
@@ -54,9 +53,11 @@ public class SerialPortUtil {
         serialPortConfig.baudRate = Constant.baudRate;
         serialPortConfig.dataBits = Constant.dataBits;
         serialPortConfig.stopBits = Constant.stopBits;
-        serialPortHelper = new SerialPortHelper(9, true, serialPortConfig);
+        serialPortConfig.parity = Constant.parity;
+        helper = new SerialPortHelper(16);
+        helper.setConfigInfo(serialPortConfig);
         openDevice();
-        serialPortHelper.setSphResultCallback(new SphResultCallback() {
+        helper.setSphResultCallback(new SphResultCallback() {
             @Override
             public void onSendData(SphCmdEntity sendCom) {
                 if (sendCom != null) {
@@ -71,6 +72,7 @@ public class SerialPortUtil {
             public void onReceiveData(SphCmdEntity data) {
                 if (data != null) {
                     LogUtils.d("收到命令：" + data.commandsHex);
+                    receive(data.commandsHex);
                     EventBus.getDefault().post(new EventMessage.Builder().type(Constant.bus_receive).objects(data).build());
                 } else {
                     LogUtils.e("收到命令：但是数据为空");
@@ -86,34 +88,67 @@ public class SerialPortUtil {
     }
 
     public void addCommands(String command) {
-        if (serialPortHelper == null || !serialPortHelper.isOpenDevice()) {
-            Toasty.error(appContext, "串口未打开", Toasty.LENGTH_SHORT, true).show();
+        if (helper == null || !helper.isOpenDevice()) {
+            LogUtils.e("异常：串口未打开");
             return;
         }
-        serialPortHelper.addCommands(command);
+        LogUtils.e("addCommands：" + command);
+        helper.addCommands(command);
     }
 
     public void closeDevice() {
-        serialPortHelper.closeDevice();
+        helper.closeDevice();
     }
 
-    private ArrayList<String> commands = new ArrayList<>();
-    private String preLast = "";
+    private ArrayList<String> strs = new ArrayList<>();
 
-
-    private void sss(String result) {
-        //AA00EECFFCEEAAAACFFCAAAADNDKCFFCDKD
-        if (result.contains("CFFC")) {
-            String pre = result.substring(0, result.indexOf("CFFC") + 4);
-            if (!preLast.isEmpty()) {
-                commands.add(preLast += pre);
+    /**
+     * 一个一个字符的判断拼接，遇到连续的CFFC时则组成一条指令
+     * e.g AA00EECFFCEEAAAACFFCAAAADNDKCF
+     */
+    private void receive(String result) {
+        char[] chars = result.toCharArray();
+        String temp = "";
+        for (char c : chars) {
+            strs.add(new String(new char[]{c}));
+            for (String s : strs) {
+                temp += s;
             }
-            String next = result.substring(result.indexOf("CFFC") + 4);
-            if (next.contains("CFFC")) {
-                String next1 = next.substring(0, next.indexOf("CFFC") + 4);
-                commands.add(next1);
-//                next1.substring()
+            if (temp.endsWith("CFFC")) {
+                commands.add(temp);
+                temp = "";
+                strs.clear();
             }
         }
     }
+
+    public void log() {
+        List<String> temps = new ArrayList<>(commands);
+        System.out.println("截取的指令：");
+        for (String str : temps) {
+            System.out.println(str);
+        }
+    }
+
+    //    private LinkedBlockingDeque<String> commands = new LinkedBlockingDeque<>();
+    private List<String> commands = new ArrayList<>();
+
+//    class SendThread extends Thread {
+//        @Override
+//        public void run() {
+//            while (true) {
+//                try {
+//                    if (!commands.isEmpty()) {
+//                        String take = commands.take();
+//                        LogUtils.e("线程中持续发送数据");
+//                        EventBus.getDefault().post(new EventMessage.Builder().type(Constant.bus_receive).objects(take).build());
+//                    }
+//                    Thread.sleep(200);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
+
 }

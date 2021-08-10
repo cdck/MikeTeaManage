@@ -27,6 +27,7 @@ import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
 import com.xlk.miketeamanage.helper.DataDisposal;
+import com.xlk.miketeamanage.helper.SerialPortUtil;
 import com.xlk.miketeamanage.model.Command;
 import com.xlk.miketeamanage.model.MmkvKey;
 import com.xlk.miketeamanage.view.PlayViewActivity;
@@ -67,6 +68,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
      */
     private boolean isOpenA, isOpenB;
     private Timer queryTempTimer;
+    private TextView tv_temperature;
 
     @Override
     protected int getLayoutId() {
@@ -76,6 +78,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     @Override
     protected void initView() {
         main_root_view = findViewById(R.id.main_root_view);
+        tv_temperature = findViewById(R.id.tv_temperature);
         lock_view = findViewById(R.id.lock_view);
         profile_image = findViewById(R.id.profile_image);
         pin_lock_view = findViewById(R.id.pin_lock_view);
@@ -116,6 +119,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         initLockView();
         presenter.initialSerialPort();
         a_btn.setOnClickListener(v -> {
+//            presenter.addCommands("AE11AA15CFFC");
             MMKV productA = MMKV.mmkvWithID(MmkvKey.product_a);
             int product_capacity_a = productA.decodeInt(MmkvKey.product_capacity_a);
             int product_capacity_b = productA.decodeInt(MmkvKey.product_capacity_b);
@@ -125,6 +129,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
             presenter.addCommands(Command.drink(product_capacity_a, product_capacity_b, product_capacity_c, product_capacity_d, water_pump_capacity));
         });
         b_btn.setOnClickListener(v -> {
+//            presenter.addCommands("AE1100BFCFFC");
             MMKV productB = MMKV.mmkvWithID(MmkvKey.product_b);
             int product_capacity_a = productB.decodeInt(MmkvKey.product_capacity_a);
             int product_capacity_b = productB.decodeInt(MmkvKey.product_capacity_b);
@@ -132,6 +137,13 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
             int product_capacity_d = productB.decodeInt(MmkvKey.product_capacity_d);
             int water_pump_capacity = productB.decodeInt(MmkvKey.water_pump_capacity);
             presenter.addCommands(Command.drink(product_capacity_a, product_capacity_b, product_capacity_c, product_capacity_d, water_pump_capacity));
+        });
+    }
+
+    @Override
+    public void updateTemp(float temp) {
+        runOnUiThread(() -> {
+            tv_temperature.setText(getString(R.string.temperature_, temp + ""));
         });
     }
 
@@ -332,13 +344,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     protected void onStop() {
         super.onStop();
         stopScreenSaverTimer();
+        stopQueryTempTimer();
     }
 
     @Override
     protected void onResume() {
         initViewByMmkv();
-//        startQueryTempTimer();
         startScreenSaverTimer();
+        startQueryTempTimer();
         super.onResume();
     }
 
@@ -350,18 +363,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
     /**
-     * 开始查询温度倒计时任务
+     * 开始倒计时查询温度任务
      */
     private void startQueryTempTimer() {
+        LogUtils.i("开始倒计时查询温度任务");
         if (queryTempTimer == null) {
             queryTempTimer = new Timer();
-            queryTempTimer.schedule(new TimerTask() {
+            TimerTask timerTask = new TimerTask() {
                 @Override
                 public void run() {
                     //10秒发送一次查询温度的指令
+                    LogUtils.i("10秒发送一次查询温度的指令");
                     presenter.addCommands(Command.queryTemp());
                 }
-            }, 10 * 1000);
+            };
+            queryTempTimer.schedule(timerTask, 0, 10 * 1000);
         }
     }
 

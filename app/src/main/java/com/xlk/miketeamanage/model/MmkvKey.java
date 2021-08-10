@@ -40,27 +40,27 @@ public class MmkvKey {
     /**
      * 默认值：单位秒
      */
-    public static final int default_screen_saver_time = 10;
+    public static final int default_screen_saver_time = 60;
     /**
      * 制冷启动温度
      */
     public static final String refrigeration_launch_temp = "refrigeration_launch_temp";
-    public static final int default_refrigeration_launch_temp = 0;
+    public static final int default_refrigeration_launch_temp = 10;
     /**
      * 制冷停止温度
      */
     public static final String refrigeration_stop_temp = "refrigeration_stop_temp";
-    public static final int default_refrigeration_stop_temp = 0;
+    public static final int default_refrigeration_stop_temp = 10;
     /**
      * 清洗速度
      */
     public static final String clean_speed = "clean_speed";
-    public static final int default_clean_speed = 0;
+    public static final int default_clean_speed = 10;
     /**
      * 出料速度
      */
     public static final String discharge_speed = "discharge_speed";
-    public static final int default_discharge_speed = 0;
+    public static final int default_discharge_speed = 10;
     /**
      * 产品名称（产品设置相关的key都是根据产品进行独立存储的）
      * MMKV.mmkvWithID()

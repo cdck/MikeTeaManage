@@ -8,6 +8,8 @@ import android.os.Bundle;
 import com.blankj.utilcode.util.LogUtils;
 import com.tencent.mmkv.MMKV;
 
+import java.io.File;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -24,8 +26,10 @@ public class App extends Application {
         appContext = this;
         LogUtils.Config config = LogUtils.getConfig();
         config.setLog2FileSwitch(true);
-        config.setDir(getFilesDir());
+        File filesDir = getFilesDir();
+        config.setDir(filesDir);
         config.setSaveDays(7);
+        LogUtils.i("log日志目录：" + filesDir.getAbsolutePath());
         String initialize = MMKV.initialize(this);
         LogUtils.i("mmkv 目录：" + initialize);
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

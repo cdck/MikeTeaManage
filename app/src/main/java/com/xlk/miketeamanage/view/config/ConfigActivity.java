@@ -337,16 +337,24 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                 .onPositive((dialog, which) -> {
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
+                    if (string.isEmpty()) {
+                        Toasty.warning(ConfigActivity.this, R.string.please_enter_content, Toasty.LENGTH_SHORT, true).show();
+                        return;
+                    }
                     int value = float2int(Float.parseFloat(string));
+                    if (value <= 0) {
+                        Toasty.warning(ConfigActivity.this, R.string.err_speed, Toasty.LENGTH_SHORT, true).show();
+                        return;
+                    }
                     if (isStart) {
                         tvStartupTemperature.setText(string);
                         mmkv.encode(MmkvKey.refrigeration_launch_temp, value);
-                        int v = mmkv.decodeInt(MmkvKey.refrigeration_stop_temp);
+                        int v = mmkv.decodeInt(MmkvKey.refrigeration_stop_temp, MmkvKey.default_refrigeration_stop_temp);
                         presenter.addCommands(Command.temperatureSetting(value, v));
                     } else {
                         tvStoppingTemperature.setText(string);
                         mmkv.encode(MmkvKey.refrigeration_stop_temp, value);
-                        int v = mmkv.decodeInt(MmkvKey.refrigeration_launch_temp);
+                        int v = mmkv.decodeInt(MmkvKey.refrigeration_launch_temp, MmkvKey.default_refrigeration_launch_temp);
                         presenter.addCommands(Command.temperatureSetting(v, value));
                     }
                 })
@@ -400,8 +408,16 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                 .onPositive((dialog, which) -> {
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
-                    tvCleaningSpeed.setText(string);
+                    if (string.isEmpty()) {
+                        Toasty.warning(ConfigActivity.this, R.string.please_enter_content, Toasty.LENGTH_SHORT, true).show();
+                        return;
+                    }
                     int value = float2int(Float.parseFloat(string));
+                    if (value <= 0) {
+                        Toasty.warning(ConfigActivity.this, R.string.err_speed, Toasty.LENGTH_SHORT, true).show();
+                        return;
+                    }
+                    tvCleaningSpeed.setText(string);
                     mmkv.encode(MmkvKey.clean_speed, value);
                     presenter.addCommands(Command.cleanSpeed(value));
                 })
@@ -455,8 +471,16 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
                 .onPositive((dialog, which) -> {
                     LogUtils.e("点击确定");
                     String string = dialog.getInputEditText().getText().toString();
-                    tvDischargeSpeed.setText(string);
+                    if (string.isEmpty()) {
+                        Toasty.warning(ConfigActivity.this, R.string.please_enter_content, Toasty.LENGTH_SHORT, true).show();
+                        return;
+                    }
                     int value = float2int(Float.parseFloat(string));
+                    if (value <= 0) {
+                        Toasty.warning(ConfigActivity.this, R.string.err_speed, Toasty.LENGTH_SHORT, true).show();
+                        return;
+                    }
+                    tvDischargeSpeed.setText(string);
                     mmkv.encode(MmkvKey.discharge_speed, value);
                     presenter.addCommands(Command.dischargeSpeed(value));
                 })

@@ -79,4 +79,6 @@
     <string name="modify_successfully">修改成功</string>
     <string name="product_list">产品列表</string>
     <string name="save_successfully">保存成功</string>
+    <string name="temperature_">当前温度：%1$s&#8451;</string>
+    <string name="err_speed">格式不正确，请重新输入</string>
 </resources>
