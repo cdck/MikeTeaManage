@@ -66,4 +66,6 @@ dependencies {
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     //https://github.com/CymChad/BaseRecyclerViewAdapterHelper
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+    //shape：https://github.com/lygttpod/SuperTextView
+    implementation 'com.github.lygttpod:SuperTextView:2.4.6'
 }
