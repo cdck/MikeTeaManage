@@ -1,5 +1,7 @@
 package com.xlk.miketeamanage.helper;
 
+import com.blankj.utilcode.util.LogUtils;
+
 /**
  * @author Created by xlk on 2021/8/7.
  * @desc 数据处理工具类
@@ -28,7 +30,11 @@ public class DataDisposal {
      * @return eg: 10 -> 0x0A
      */
     public static String int2HexString(int intHex) {
-        return Integer.toHexString(intHex).toUpperCase();
+        String st = Integer.toHexString(intHex).toUpperCase();
+        if(st.length()==1){
+            return "0"+st;
+        }
+        return String.format("%2s",st).replaceAll(" ","0");
     }
 
     /**
@@ -164,19 +170,21 @@ public class DataDisposal {
     /* **** ** 高8位和低8位计算： https://www.zhihu.com/question/454843238  ** **** */
     public static String high8HexString(int num) {
 //        int high8 = num / 256;
-//        int high8 = (num & 0xff00) >> 8;
+        int high8 = (num & 0xff00) >> 8;
 //        int high8 = num >> 8;
         /* **** **  https://blog.csdn.net/u014141461/article/details/116856369  ** **** */
-        int high8 = (byte) (num & 0xff);
+//        int high8 = (byte) (num & 0xff);
+//        LogUtils.e(num+"高8位："+high8);
         return int2HexString(high8);
     }
 
     public static String low8HexString(int num) {
 //        int low8 = num % 256;
-//        int low8 = num & 0x00ff;
+        int low8 = num & 0x00ff;
 //        int low8 = num & 0x00ff;
         /* **** **  https://blog.csdn.net/u014141461/article/details/116856369  ** **** */
-        int low8 = (byte) ((num & 0xff00) >> 8);
+//        int low8 = (byte) ((num & 0xff00) >> 8);
+//        LogUtils.e(num+"低8位："+low8);
         return int2HexString(low8);
     }
 

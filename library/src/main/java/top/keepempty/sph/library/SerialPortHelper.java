@@ -183,6 +183,7 @@ public class SerialPortHelper {
         comEntry.commands = commands;
         comEntry.flag = flag;
         comEntry.commandsHex = DataConversion.encodeHexString(commands);
+        Log.e("SerialPortHelper","addCommands comEntry.commandsHex="+comEntry.commandsHex);
         addCommands(comEntry);
     }
 

@@ -37,8 +37,11 @@ class ConfigPresenter extends BasePresenter<ConfigContract.View> implements Conf
             case Constant.bus_receive: {
                 SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
                 if (sphCmdEntity.commandsHex.equals(Command.success_temperature)) {
-                    mView.updateTemperature();
-                } else if (sphCmdEntity.commandsHex.equals(Command.success_temperature_temp)) {
+                    mView.updateTemperature(true);
+                }else if(sphCmdEntity.commandsHex.equals("AD00ADCFFC")) {
+                    mView.updateTemperature(false);
+                }
+                else if (sphCmdEntity.commandsHex.equals(Command.success_temperature_temp)) {
                     Toasty.success(appContext, "设置启动或停止制冷温度成功", Toasty.LENGTH_SHORT, true).show();
                     LogUtils.i("设置启动或停止制冷温度成功");
                 } else if (sphCmdEntity.commandsHex.equals(Command.success_clean_speed)) {

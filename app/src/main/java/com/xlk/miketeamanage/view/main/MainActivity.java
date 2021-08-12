@@ -1,17 +1,31 @@
 package com.xlk.miketeamanage.view.main;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +37,8 @@ import com.andrognito.pinlockview.PinLockListener;
 import com.andrognito.pinlockview.PinLockView;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.XXPermissions;
 import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
@@ -33,12 +49,14 @@ import com.xlk.miketeamanage.model.MmkvKey;
 import com.xlk.miketeamanage.view.PlayViewActivity;
 import com.xlk.miketeamanage.view.config.ConfigActivity;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+
 import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainContract.View {
@@ -69,6 +87,12 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     private boolean isOpenA, isOpenB;
     private Timer queryTempTimer;
     private TextView tv_temperature;
+    private PopupWindow errPop;
+    private TextView tv_other;
+    private WindowManager wm;
+    private boolean isShowErrWindow;
+    private View errWindowView;
+    private AlertDialog disconnectedDialog;
 
     @Override
     protected int getLayoutId() {
@@ -118,33 +142,165 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         mmkv = MMKV.defaultMMKV();
         initLockView();
         presenter.initialSerialPort();
+        applyAlertWindowPermission();
+    }
+
+    private void start() {
         a_btn.setOnClickListener(v -> {
-//            presenter.addCommands("AE11AA15CFFC");
+            if(isShowErrWindow){
+                return;
+            }
             MMKV productA = MMKV.mmkvWithID(MmkvKey.product_a);
             int product_capacity_a = productA.decodeInt(MmkvKey.product_capacity_a);
             int product_capacity_b = productA.decodeInt(MmkvKey.product_capacity_b);
             int product_capacity_c = productA.decodeInt(MmkvKey.product_capacity_c);
             int product_capacity_d = productA.decodeInt(MmkvKey.product_capacity_d);
             int water_pump_capacity = productA.decodeInt(MmkvKey.water_pump_capacity);
+            LogUtils.i("来一杯A 水泵值："+water_pump_capacity);
             presenter.addCommands(Command.drink(product_capacity_a, product_capacity_b, product_capacity_c, product_capacity_d, water_pump_capacity));
         });
         b_btn.setOnClickListener(v -> {
-//            presenter.addCommands("AE1100BFCFFC");
+            if(isShowErrWindow){
+                return;
+            }
             MMKV productB = MMKV.mmkvWithID(MmkvKey.product_b);
             int product_capacity_a = productB.decodeInt(MmkvKey.product_capacity_a);
             int product_capacity_b = productB.decodeInt(MmkvKey.product_capacity_b);
             int product_capacity_c = productB.decodeInt(MmkvKey.product_capacity_c);
             int product_capacity_d = productB.decodeInt(MmkvKey.product_capacity_d);
             int water_pump_capacity = productB.decodeInt(MmkvKey.water_pump_capacity);
+            LogUtils.i("来一杯B 水泵值："+water_pump_capacity);
             presenter.addCommands(Command.drink(product_capacity_a, product_capacity_b, product_capacity_c, product_capacity_d, water_pump_capacity));
         });
     }
 
+    /**
+     * 申请悬浮窗权限
+     */
+    private void applyAlertWindowPermission() {
+        XXPermissions.with(this).constantRequest()
+                .permission(Manifest.permission.SYSTEM_ALERT_WINDOW)
+                .request(new OnPermission() {
+                    @Override
+                    public void hasPermission(List<String> granted, boolean all) {
+                        if(all){
+                            start();
+                        }
+                    }
+
+                    @Override
+                    public void noPermission(List<String> denied, boolean quick) {
+                    }
+                });
+    }
     @Override
     public void updateTemp(float temp) {
         runOnUiThread(() -> {
             tv_temperature.setText(getString(R.string.temperature_, temp + ""));
         });
+    }
+
+    @Override
+    public void errToast(boolean errA, boolean errB, boolean errC, boolean errD) {
+        if(!XXPermissions.hasPermission(this,Manifest.permission.SYSTEM_ALERT_WINDOW)){
+            LogUtils.e("还未拥有悬浮窗权限");
+            return;
+        }
+        String msg = "";
+        if (errA) msg += "第一缸饮料！  ";
+        if (errB) msg += "第二缸饮料！  ";
+        if (errC) msg += "第三缸饮料！  ";
+        if (errD) msg += "第四缸饮料！  ";
+//        if(disconnectedDialog!=null && disconnectedDialog.isShowing()){
+//            if(msg.isEmpty()){
+//                disconnectedDialog.dismiss();
+//            }else {
+//                tv_other.setText(msg);
+//            }
+//            return;
+//        }
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        View inflate = LayoutInflater.from(this).inflate(R.layout.pop_layout, null);
+//        builder.setView(inflate);
+//        tv_other = inflate.findViewById(R.id.tv_other);
+//        tv_other.setText(msg);
+//        disconnectedDialog = builder.create();
+//        Window window = disconnectedDialog.getWindow();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0新特性
+//            window.getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            window.getAttributes().type = WindowManager.LayoutParams.TYPE_PHONE;//总是出现在应用程序窗口之上
+//        } else {
+//            window.getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;//总是出现在应用程序窗口之上
+//        }
+//        window.setGravity(Gravity.TOP | Gravity.CENTER);
+//
+//        disconnectedDialog.setCanceledOnTouchOutside(false);//点击外部不消失
+//        disconnectedDialog.setCancelable(false);//用户点击返回键使其无效
+//        disconnectedDialog.show();//这行代码要在设置宽高的前面，宽高才有用
+//        WindowManager.LayoutParams layoutparams = window.getAttributes();
+//        //取消掉dialog弹出后界面阴影效果
+//        layoutparams.dimAmount = 0f;
+//        //距离上方的百分比
+//        layoutparams.verticalMargin = 0.03f;
+//        layoutparams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+//        window.setAttributes(layoutparams);
+        /**WindowManage**/
+//        if(isShowErrWindow){
+//            if(msg.isEmpty()){
+//                wm.removeView(errWindowView);
+//            }else {
+//                tv_other.setText(msg);
+//            }
+//            return;
+//        }
+//        //获取 WindowManager
+//        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+//        int windowWidth = wm.getDefaultDisplay().getWidth();
+//        int windowHeight = wm.getDefaultDisplay().getHeight();
+//        DisplayMetrics metrics = new DisplayMetrics();
+//        wm.getDefaultDisplay().getMetrics(metrics);
+//        /** **** **  悬浮按钮  ** **** **/
+//        WindowManager.LayoutParams mParams = new WindowManager.LayoutParams();
+//        mParams.flags = //WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+////        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+//                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0新特性
+//            mParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            mParams.type = WindowManager.LayoutParams.TYPE_PHONE;//总是出现在应用程序窗口之上
+//        } else {
+//            mParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;//总是出现在应用程序窗口之上
+//        }
+//        mParams.format = PixelFormat.RGBA_8888;
+//        mParams.gravity = Gravity.CENTER;
+//        mParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+//        mParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+//
+
+        if(errPop!=null && errPop.isShowing()){
+            if(msg.isEmpty()){
+                isShowErrWindow=false;
+                errPop.dismiss();
+            }else {
+                tv_other.setText(msg);
+            }
+            return;
+        }
+        errWindowView = LayoutInflater.from(this).inflate(R.layout.pop_layout, null);
+        tv_other = errWindowView.findViewById(R.id.tv_other);
+        tv_other.setText(msg);
+        errPop = new PopupWindow(errWindowView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        errPop.setBackgroundDrawable(new BitmapDrawable());
+        // 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
+        errPop.setTouchable(false);
+        // true:设置触摸外面时消失
+        errPop.setOutsideTouchable(false);
+        errPop.setFocusable(false);
+        errPop.showAtLocation(lock_view, Gravity.CENTER, 0, 0);
+
+//        wm.addView(errWindowView,mParams);
+        isShowErrWindow = true;
     }
 
     /**
@@ -160,15 +316,20 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
             Drawable drawable = Drawable.createFromPath(aPath);
             a.setBackground(drawable);
         }
+        a_content.setTextSize(product_a.decodeInt(MmkvKey.product_name_size, 20));
+        a_content.setTextColor(product_a.decodeInt(MmkvKey.product_name_color, Color.BLACK));
+
         MMKV product_b = MMKV.mmkvWithID(MmkvKey.product_b);
         isOpenB = product_b.decodeBool(MmkvKey.product_open);
+        b.setVisibility(isOpenB ? View.VISIBLE : View.GONE);
         b_content.setText(product_b.decodeString(MmkvKey.product_name));
         String bPath = product_b.decodeString(MmkvKey.product_img);
         if (FileUtils.isFileExists(bPath)) {
             Drawable drawable = Drawable.createFromPath(bPath);
             b.setBackground(drawable);
         }
-        b.setVisibility(isOpenB ? View.VISIBLE : View.GONE);
+        b_content.setTextSize(product_b.decodeInt(MmkvKey.product_name_size, 20));
+        b_content.setTextColor(product_b.decodeInt(MmkvKey.product_name_color, Color.BLACK));
     }
 
     private void initLockView() {

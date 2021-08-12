@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
  */
 public class App extends Application {
     public static Context appContext;
+    public static boolean isCanUse = true;
 
     @Override
     public void onCreate() {

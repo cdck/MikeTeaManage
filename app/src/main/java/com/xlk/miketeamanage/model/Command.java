@@ -132,7 +132,7 @@ public class Command {
         String high4 = high8HexString(capacity4);
         String low4 = low8HexString(capacity4);
         String highWaterPump = high8HexString(waterPumpCapacity);
-        String lowWaterPump = high8HexString(waterPumpCapacity);
+        String lowWaterPump = low8HexString(waterPumpCapacity);
         //前11位数的异或结果
         String xor = hexXOR(hexXOR(hexXOR(hexXOR(hexXOR(hexXOR(hexXOR(hexXOR(hexXOR(hexXOR("AF", high1), low1), high2), low2), high3), low3), high4), low4), highWaterPump), lowWaterPump);
         String result = "AF"

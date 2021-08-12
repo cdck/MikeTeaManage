@@ -75,11 +75,45 @@ class CleanPresenter extends BasePresenter<CleanContract.View> implements CleanC
                 break;
             }
             case Constant.bus_receive: {
-//                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
+                SphCmdEntity sphCmdEntity = (SphCmdEntity) msg.getObjects()[0];
 //                LogUtils.i("bus_receive=" + sphCmdEntity.commandsHex);
-//                if (sphCmdEntity.commandsHex.contains(Command.success_product)) {
-//                    Toasty.success(appContext, "开启清洗成功", Toasty.LENGTH_SHORT, true).show();
-//                }
+                if (sphCmdEntity.commandsHex.equals("AE11AA15CFFC")) {
+                    LogUtils.i("成功启动清洗第1缸");
+                    mView.updateWaterTankA(true);
+                }else if(sphCmdEntity.commandsHex.equals("AE1100BFCFFC")) {
+                    LogUtils.i("成功关闭清洗第1缸");
+                    mView.updateWaterTankA(false);
+                }else if(sphCmdEntity.commandsHex.equals("AE22AA26CFFC")) {
+                    LogUtils.i("成功启动清洗第2缸");
+                    mView.updateWaterTankB(true);
+                }else if(sphCmdEntity.commandsHex.equals("AE22008CCFFC")) {
+                    LogUtils.i("成功关闭清洗第2缸");
+                    mView.updateWaterTankB(false);
+                }else if(sphCmdEntity.commandsHex.equals("AE33AA37CFFC")) {
+                    LogUtils.i("成功启动清洗第3缸");
+                    mView.updateWaterTankC(true);
+                }else if(sphCmdEntity.commandsHex.equals("AE33009DCFFC")) {
+                    LogUtils.i("成功关闭清洗第3缸");
+                    mView.updateWaterTankC(false);
+                }else if(sphCmdEntity.commandsHex.equals("AE44AA40CFFC")) {
+                    LogUtils.i("成功启动清洗第4缸");
+                    mView.updateWaterTankD(true);
+                }else if(sphCmdEntity.commandsHex.equals("AE4400EACFFC")) {
+                    LogUtils.i("成功关闭清洗第4缸");
+                    mView.updateWaterTankD(false);
+                }else if(sphCmdEntity.commandsHex.equals("AE55AA51CFFC")) {
+                    LogUtils.i("成功启动清洗水泵");
+                    mView.updateWaterPump(true);
+                }else if(sphCmdEntity.commandsHex.equals("AE5500FBCFFC")) {
+                    LogUtils.i("成功关闭清洗水泵");
+                    mView.updateWaterPump(false);
+                }else if(sphCmdEntity.commandsHex.equals("AEAAAAAECFFC")) {
+                    LogUtils.i("成功启动清洗所有水缸");
+                    mView.updateWaterTankAll(true);
+                }else if(sphCmdEntity.commandsHex.equals("AEAA0004CFFC")) {
+                    LogUtils.i("成功关闭清洗所有水缸");
+                    mView.updateWaterTankAll(false);
+                }
                 break;
             }
             case Constant.bus_complete: {

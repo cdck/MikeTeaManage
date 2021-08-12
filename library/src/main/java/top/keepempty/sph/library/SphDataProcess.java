@@ -77,12 +77,14 @@ public class SphDataProcess {
                 if (onResultCallback != null) {
                     onResultCallback.onSendData(currentCommand);
                 }
-                // 设置了超时时间
-                if (currentCommand.timeOut > 0) {
-                    sphHandler.sendEmptyMessageDelayed(TIMEOUT_WHAT, currentCommand.timeOut);
+                if (currentCommand != null) {
+                    // 设置了超时时间
+                    if (currentCommand.timeOut > 0) {
+                        sphHandler.sendEmptyMessageDelayed(TIMEOUT_WHAT, currentCommand.timeOut);
+                    }
+                    SerialPortJNI.writePort(currentCommand.commands);
+                    concurrentCom.setStatus(true);
                 }
-                SerialPortJNI.writePort(currentCommand.commands);
-                concurrentCom.setStatus(true);
             }
         }
     }

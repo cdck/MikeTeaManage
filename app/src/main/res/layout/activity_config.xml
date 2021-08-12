@@ -422,7 +422,6 @@
                     android:textSize="@dimen/text_size_medium" />
             </RelativeLayout>
 
-
         </LinearLayout>
 
     </ScrollView>

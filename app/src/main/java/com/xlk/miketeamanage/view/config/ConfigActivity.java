@@ -16,6 +16,8 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PhoneUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.XXPermissions;
 import com.tencent.mmkv.MMKV;
 import com.xlk.miketeamanage.R;
 import com.xlk.miketeamanage.base.BaseActivity;
@@ -28,6 +30,9 @@ import com.xlk.miketeamanage.view.ProductSetupActivity;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import java.util.List;
+
 import es.dmoral.toasty.Toasty;
 
 import static com.xlk.miketeamanage.helper.DataDisposal.float2int;
@@ -122,6 +127,10 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
 
     @Override
     protected void init(Bundle savedInstanceState) {
+        start();
+    }
+
+    private void start() {
         mmkv = MMKV.defaultMMKV();
         initDataFromMmkv();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -134,6 +143,7 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
         tv_version.setText(AppUtils.getAppVersionName());
         presenter.initialSerialPort();
     }
+
 
     private void initDataFromMmkv() {
         tvStartupTemperature.setText(String.valueOf(mmkv.decodeInt(MmkvKey.refrigeration_launch_temp, MmkvKey.default_refrigeration_launch_temp)));
@@ -158,8 +168,8 @@ public class ConfigActivity extends BaseActivity<ConfigPresenter> implements Con
     }
 
     @Override
-    public void updateTemperature() {
-        cbStartCooling.setChecked(!cbStartCooling.isChecked());
+    public void updateTemperature(boolean open) {
+        cbStartCooling.setChecked(open);
     }
 
     @Override

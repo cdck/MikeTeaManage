@@ -8,7 +8,14 @@ import com.xlk.miketeamanage.base.IBaseView;
  * @desc
  */
 interface CleanContract {
-    interface View extends IBaseView{}
+    interface View extends IBaseView{
+        void updateWaterTankA(boolean open);
+        void updateWaterTankB(boolean open);
+        void updateWaterTankC(boolean open);
+        void updateWaterTankD(boolean open);
+        void updateWaterTankAll(boolean open);
+        void updateWaterPump(boolean open);
+    }
     interface Presenter extends IBasePresenter{
 
         /**

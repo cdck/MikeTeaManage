@@ -74,6 +74,40 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
     }
 
     @Override
+    public void updateWaterTankAll(boolean open) {
+        cbAll.setChecked(open);
+        updateWaterTankA(open);
+        updateWaterTankB(open);
+        updateWaterTankC(open);
+        updateWaterTankD(open);
+    }
+
+    @Override
+    public void updateWaterTankA(boolean open) {
+        cbA.setChecked(open);
+    }
+
+    @Override
+    public void updateWaterTankB(boolean open) {
+        cbB.setChecked(open);
+    }
+
+    @Override
+    public void updateWaterTankC(boolean open) {
+        cbC.setChecked(open);
+    }
+
+    @Override
+    public void updateWaterTankD(boolean open) {
+        cbD.setChecked(open);
+    }
+
+    @Override
+    public void updateWaterPump(boolean open) {
+        cbWaterPump.setChecked(open);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back: {
@@ -84,12 +118,12 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
                 boolean checked = !cbAll.isChecked();
                 if (checked) {
                     presenter.addCommands(Command.cleanWaterTank("AA", "AA"));
-//                    presenter.addCommands("AEAAAAAECDFC");
+//                    presenter.addCommands("AEAAAAAECFFC");
                 } else {
                     presenter.addCommands(Command.cleanWaterTank("AA", "00"));
 //                    presenter.addCommands("AE1100BFCFFC");
                 }
-                cbAll.setChecked(checked);
+//                cbAll.setChecked(checked);
                 break;
             }
             case R.id.rl_cb_a: {
@@ -101,7 +135,7 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
                     presenter.addCommands(Command.cleanWaterTank("11", "00"));
 //                    presenter.addCommands("AE1100BFCFFC");
                 }
-                cbA.setChecked(checked);
+//                cbA.setChecked(checked);
                 break;
             }
             case R.id.rl_cb_b: {
@@ -111,7 +145,7 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
                 } else {
                     presenter.addCommands(Command.cleanWaterTank("22", "00"));
                 }
-                cbB.setChecked(checked);
+//                cbB.setChecked(checked);
                 break;
             }
             case R.id.rl_cb_c: {
@@ -121,7 +155,7 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
                 } else {
                     presenter.addCommands(Command.cleanWaterTank("33", "00"));
                 }
-                cbC.setChecked(checked);
+//                cbC.setChecked(checked);
                 break;
             }
             case R.id.rl_cb_d: {
@@ -131,7 +165,7 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
                 } else {
                     presenter.addCommands(Command.cleanWaterTank("44", "00"));
                 }
-                cbD.setChecked(checked);
+//                cbD.setChecked(checked);
                 break;
             }
             case R.id.rl_cb_water_pump: {
@@ -141,7 +175,7 @@ public class CleanActivity extends BaseActivity<CleanPresenter> implements Clean
                 } else {
                     presenter.addCommands(Command.cleanWaterTank("55", "00"));
                 }
-                cbWaterPump.setChecked(checked);
+//                cbWaterPump.setChecked(checked);
                 break;
             }
             default:

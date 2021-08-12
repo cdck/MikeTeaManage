@@ -10,9 +10,10 @@ import com.xlk.miketeamanage.base.IBaseView;
 interface ConfigContract {
     interface View extends IBaseView {
         /**
-         * 更新启动制冷，选中状态取反
+         * 更新启动制冷
+         * @param open
          */
-        void updateTemperature();
+        void updateTemperature(boolean open);
     }
 
     interface Presenter extends IBasePresenter {

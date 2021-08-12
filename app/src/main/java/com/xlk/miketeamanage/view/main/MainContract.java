@@ -16,6 +16,8 @@ interface MainContract {
          * @param temp 温度
          */
         void updateTemp(float temp);
+
+        void errToast(boolean errA, boolean errB, boolean errC, boolean errD);
     }
     interface Presenter extends IBasePresenter{
         void initialSerialPort();

@@ -79,6 +79,10 @@
     <string name="modify_successfully">修改成功</string>
     <string name="product_list">产品列表</string>
     <string name="save_successfully">保存成功</string>
-    <string name="temperature_">当前温度：%1$s&#8451;</string>
+    <string name="temperature_">%1$s&#8451;</string>
     <string name="err_speed">格式不正确，请重新输入</string>
+    <string name="device_yichang">设备异常</string>
+    <string name="text_color_set">字体颜色配置</string>
+    <string name="current_temp">当前温度：</string>
+    <string name="sheshidu"><![CDATA[&#8451;]]></string>
 </resources>

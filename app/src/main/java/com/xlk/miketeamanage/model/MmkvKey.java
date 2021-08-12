@@ -69,6 +69,14 @@ public class MmkvKey {
      */
     public static final String product_name = "product_name";
     /**
+     * 产品名称颜色
+     */
+    public static final String product_name_color = "product_name_color";
+    /**
+     * 产品名称大小
+     */
+    public static final String product_name_size = "product_name_size";
+    /**
      * 当前产品是否开启
      */
     public static final String product_open = "product_open";
